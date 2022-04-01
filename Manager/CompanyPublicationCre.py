@@ -39,14 +39,17 @@ def a_company_info(browser, query: str):
 
             time.sleep(set_user_sleep_time())
             try:
-                browser = open_publisher_info_page(browser)
+                browser, publisher_name = open_publisher_info_page(browser)
                 factor = parse_publisher_complex_factor(browser)
             except NoSuchElementException as e:
                 factor = ""
+                publisher_name = ""
                 print("期刊没有影响因子 或 非学术期刊：\n {}".format("NoSuchElementException"))
 
-            output.append("{0},{1},{2},{3},{4}".format(query, ",".join(date), "\t".join(authorities),
-                                                       "\t".join(types), factor))
+            output_str = "{},{},{},{},{},{}".format(query, ",".join(date), "\t".join(authorities),
+                                                          "\t".join(types), factor, publisher_name)
+            output.append(output_str)
+            print(output_str)
             time.sleep(set_user_sleep_time())
             # sys.stdout.write("begin to clear windows\n")
             browser = clear_window_tabs(browser, result_handle_page)
@@ -81,6 +84,6 @@ def all_company_info_io(company_file_url: "str", info_file_url: "str"):
 
 
 if __name__ == '__main__':
-    input_file_url = r""
-    output_file_url = r""
+    input_file_url = r"D:\BaiduNetdiskDownload\input.txt"
+    output_file_url = r"D:\BaiduNetdiskDownload\output.txt"
     all_company_info_io(input_file_url, output_file_url)
