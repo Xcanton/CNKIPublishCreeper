@@ -10,6 +10,10 @@ def result_items_parse(browser):
     return items_box
 
 
+def parse_publish_year(item):
+    return item.find_element_by_class_name('date').text
+
+
 def open_result_item_detail(browser, item):
 
     former_windows_list = browser.window_handles

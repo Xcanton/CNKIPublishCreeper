@@ -6,7 +6,7 @@ from Config.SeleniumConfig import clear_window_tabs, initial_chrome_driver, swit
 from Config.pyConfig import set_user_sleep_time
 from Creeper.AdvanceQuery import cnki_advance_search, author_advance_search
 from Parser.ResultListParse import result_items_parse, open_result_item_detail, parse_authority_name, \
-    parse_publisher_type, open_publisher_info_page, parse_publisher_complex_factor
+    parse_publisher_type, open_publisher_info_page, parse_publisher_complex_factor, parse_publish_year
 
 
 class FakeElement:
@@ -29,6 +29,8 @@ def a_company_info(browser, query: str):
         for item in result_items_parse(browser):
 
             time.sleep(set_user_sleep_time())
+            ds_date = parse_publish_year(item)
+            date = ds_date.split("-")
             browser = open_result_item_detail(browser, item)
 
             time.sleep(set_user_sleep_time())
@@ -43,8 +45,8 @@ def a_company_info(browser, query: str):
                 factor = ""
                 print("期刊没有影响因子 或 非学术期刊：\n {}".format("NoSuchElementException"))
 
-            output.append("{0},{1},{2},{3}".format(query, "\t".join(authorities),
-                                                   "\t".join(types), factor))
+            output.append("{0},{1},{2},{3},{4}".format(query, ",".join(date), "\t".join(authorities),
+                                                       "\t".join(types), factor))
             time.sleep(set_user_sleep_time())
             # sys.stdout.write("begin to clear windows\n")
             browser = clear_window_tabs(browser, result_handle_page)
