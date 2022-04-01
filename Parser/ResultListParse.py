@@ -48,11 +48,12 @@ def open_publisher_info_page(browser):
 
     # //*[@id="func610"]/div/a
     publisher = browser.find_element_by_xpath('/html/body/div[2]/div[1]/div[3]/div/div/div[1]/div[1]/span/a[1]')
+    publisher_name = publisher.text
     publisher.click()
 
     browser = switch_window_tab(browser)
 
-    return browser
+    return browser, publisher_name
 
 
 def parse_publisher_complex_factor(browser):
