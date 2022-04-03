@@ -47,7 +47,7 @@ def a_company_info(browser, query: str):
                 print("期刊没有影响因子 或 非学术期刊：\n {}".format("NoSuchElementException"))
 
             output_str = "{},{},{},{},{},{}".format(query, ",".join(date), "\t".join(authorities),
-                                                          "\t".join(types), factor, publisher_name)
+                                                    "\t".join(types), factor, publisher_name)
             output.append(output_str)
             print(output_str)
             time.sleep(set_user_sleep_time())
@@ -68,7 +68,7 @@ def a_company_info(browser, query: str):
     return "\n".join(output)
 
 
-def all_company_info_io(company_file_url: "str", info_file_url: "str"):
+def all_company_info_io(company_file_url: str, info_file_url: str):
     browser = initial_chrome_driver(visualize=True, img_enable=True)
     with open(company_file_url, "r", encoding='utf-8') as file:
         lines = file.readlines()
