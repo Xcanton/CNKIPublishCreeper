@@ -39,7 +39,7 @@ def parse_authority_name(browser):
 def parse_publisher_type(browser):
 
     publisher_types_list = browser.find_elements_by_xpath('/html/body/div[2]/div[1]/div[3]/div/div/div[1]/div[1]/a')
-    types_name_list = [item.text for item in publisher_types_list]
+    types_name_list = [item.text for item in publisher_types_list] if publisher_types_list else []
 
     return types_name_list
 
@@ -59,9 +59,13 @@ def open_publisher_info_page(browser):
 def parse_publisher_complex_factor(browser):
 
     factor = ""
+    now_type = []
     try:
         factor = browser.find_element_by_xpath('//*[@id="evaluateInfo"]/li[2]/p[1]/span').text
+        # //*[@id="evaluateInfo"]/li[2]/p[1]/span
+        now_type = browser.find_elements_by_xpath('//*[@id="qk"]/div[2]/dl/dd/p[2]/span')
+
     except Exception as e:
         pass
 
-    return factor
+    return factor, [item.text for item in now_type]

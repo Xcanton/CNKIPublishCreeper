@@ -59,14 +59,18 @@ def switch_window_tab(browser, windows_list: list = None, to_page=-1):
 def clear_window_tabs(browser, save_page=0):
 
     windows_list = browser.window_handles
+    # print(windows_list)
     if len(windows_list) == 1:
         return browser
 
     for i in range(len(windows_list)):
+        # print(windows_list[i])
         if (save_page == i) | (save_page == windows_list[i]):
             continue
+        # print("cleaned" + windows_list[i])
         browser.switch_to.window(windows_list[i])
         browser.close()
+    windows_list = browser.window_handles
     browser.switch_to.window(browser.window_handles[0])
 
     return browser
