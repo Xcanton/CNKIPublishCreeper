@@ -1,6 +1,11 @@
 import sys
 import time
 
+import win32api
+import win32con
+import pyautogui
+
+from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException #导入一个没有这个元素的类，定位到没有这个元素会抛出一个异常
 from Config.SeleniumConfig import clear_window_tabs, initial_chrome_driver, switch_window_tab
 from Config.pyConfig import set_user_sleep_time
@@ -10,8 +15,9 @@ from Parser.ResultListParse import result_items_parse, open_result_item_detail, 
 
 
 
-input_file_url = r"D:\BaiduNetdiskDownload\intotal_no22_1.txt"
-output_file_url = r"D:\BaiduNetdiskDownload\outtotal_no22_1.txt"
+input_file_url = r"D:\BaiduNetdiskDownload\input22.txt"
+output_file_url = r"D:\BaiduNetdiskDownload\output22_4.txt"
+                  # outtotal_no22_1.txt
 
 
 class FakeElement:
@@ -62,6 +68,11 @@ def a_company_info(browser, query: str, info_file_url=None):
                     date = ds_date.split("-")
                 except Exception as e:
                     date = []
+                if date is not None :
+                    if int(date[0]) > 2020:
+                        continue
+                    if int(date[0]) < 2010:
+                        break
 
                 try:
                     aricle_name = item.find_element_by_class_name('name').text
@@ -105,7 +116,7 @@ def a_company_info(browser, query: str, info_file_url=None):
                 # sys.stdout.write("begin to clear windows\n")
                 # print("start cleaning browser")
                 browser = clear_window_tabs(browser, result_handle_page)
-                time.sleep(10)
+                time.sleep(1)
                 # print("finish cleaning")
 
         # /html/body/div[3]/div[2]/div[2]/div[2]/form/div/div[2]/a[11]
@@ -118,20 +129,38 @@ def a_company_info(browser, query: str, info_file_url=None):
             break
         else:
             cur_ind = -1
-            pages_list[-1].click()
-            result_handle_page = browser.current_window_handle
+            try:
+                pages_list[-1].click()
+            except Exception as e:
+                time.sleep(3)
+                try:
+                    browser.find_elements_by_xpath('/html/body/div[3]/div[2]/div[2]/div[2]/form/div/div[2]/a')[-1].click()
+                except Exception:
+                    try:
+                        browser.find_element_by_xpath('/html/body').sent_keys(Keys.RIGHT)
+                    except:
+                        time.sleep(3)
+                        browser.execute_script("window.scrollTo(0,document.body.scrollHeight);")
+                        pyautogui.click(1800, 500)
+                        time.sleep(3)
+                        win32api.keybd_event(39, win32api.MapVirtualKey(39, 0), 0, 0)
+                        win32api.keybd_event(39, win32api.MapVirtualKey(39, 0), win32con.KEYEVENTF_KEYUP, 0)
+                        time.sleep(3)
 
-    return
+    result_handle_page = browser.current_window_handle
+
+    return browser
     # "\n".join(output)
 
 
 def all_company_info_io(company_file_url: "str", info_file_url: "str"):
-    browser = initial_chrome_driver(visualize=True, img_enable=True)  # )
+    browser = initial_chrome_driver(img_enable=True)  # visualize=True, )
+    browser.maximize_window()
     with open(company_file_url, "r", encoding='utf-8') as file:
         lines = file.readlines()
         for line in lines:
             try:
-                a_company_info(browser, line.strip(), info_file_url)
+                browser = a_company_info(browser, line.strip(), info_file_url)
                 # with open(info_file_url, "a", encoding='utf-8') as output_file:
                 #     output_file.write("{}\n".format(company_info))
                 #     output_file.flush()
@@ -142,12 +171,24 @@ def all_company_info_io(company_file_url: "str", info_file_url: "str"):
 
 if __name__ == '__main__':
 
-     # all_company_info_io(input_file_url, output_file_url)
-    sys.path.append(r"C:\\Users\\DELL\\Desktop\\CNKIPublishCreeper\\Config")
-    # sys.path.append(r"C:\Users\DELL\Desktop\CNKIPublishCreeper\Creeper\\")
-    # sys.path.append(r"C:\Users\DELL\Desktop\CNKIPublishCreeper\Manager\\")
-    #  sys.path.append(r"C:\Users\DELL\Desktop\CNKIPublishCreeper\\")
-    browser = initial_chrome_driver()
-    company_info = a_company_info(browser, "广州港股份有限公司")
-    print(company_info)
-    browser.close()
+     all_company_info_io(input_file_url, output_file_url)
+
+
+    # browser = initial_chrome_driver()
+    # browser.maximize_window()
+    # # company_info = a_company_info(browser, "广州港股份有限公司", output_file_url)
+    # browser = cnki_advance_search(browser)
+    # time.sleep(set_user_sleep_time())
+    # browser = author_advance_search(browser, "北京科技大学")
+    # time.sleep(3)
+    # print("start to press RIGHT")
+    # # print(company_info)
+    # time.sleep(3)
+    # browser.execute_script("window.scrollTo(0,document.body.scrollHeight);")
+    # pyautogui.click(1800, 500)
+    # time.sleep(3)
+    # win32api.keybd_event(39, win32api.MapVirtualKey(39, 0), 0, 0)
+    # win32api.keybd_event(39, win32api.MapVirtualKey(39, 0), win32con.KEYEVENTF_KEYUP, 0)
+    # print("Is page changed?")
+    # time.sleep(10)
+    # browser.quit()
